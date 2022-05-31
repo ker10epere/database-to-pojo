@@ -1,8 +1,15 @@
+import { pascalCase } from 'change-case';
 import { readFileSync } from 'fs';
 import { outputFileSync } from 'fs-extra';
 import { Pool, PoolConfig } from 'pg';
-import { getCurrentDate, getCurrentTime } from './src/tools/formated-date';
-import { generateSQLUpdateQuery } from './src/tools/helpers';
+import { DataType, TableRow } from './classes/database.interfaces';
+import { repositoryImpl } from './classes/repository/repository-impl';
+import { DirectoryType, generateDirOutputPath } from './tools/dirPath';
+import {
+  getCurrentDate,
+  getCurrentTime,
+  getCurrentTimestamp,
+} from './tools/formated-date';
 
 interface DBConf extends PoolConfig {
   tables: string[];
@@ -13,19 +20,6 @@ const dbConfig: DBConf = JSON.parse(readFileSync('./db-config.json', 'utf8'));
 interface ColumnType {
   column_name: string;
   data_type: string;
-}
-
-export type DataType = [
-  javaObj: string | null,
-  rsObj: string | null,
-  sqlType: string[] | null
-];
-
-export interface TableRow {
-  columnName: string;
-  javaObj: string;
-  rsObj: string;
-  sqlType: string[];
 }
 
 const dataTypes: DataType[] = [
@@ -53,7 +47,7 @@ dbConfig.tables.forEach((tableName) => {
     async (err, res: { rows: ColumnType[] }) => {
       try {
         if (err) return console.log(err);
-
+        const pascalTableName = pascalCase(tableName);
         outputFileSync(
           `./logs/${getCurrentDate()}.jsonc`,
           `//[${getCurrentTime()}] ${tableName} \n${JSON.stringify(
@@ -85,13 +79,28 @@ dbConfig.tables.forEach((tableName) => {
           }
         );
 
-        // add logic below
-        // const result = generateGetResultSetObjects(tableRows);
-        const result = generateSQLUpdateQuery(tableName, tableRows);
-        console.log(result);
+        const repositoryImplData = repositoryImpl(tableRows);
+        const repositoryImplPath = generateDirOutputPath(
+          DirectoryType.RepositoryImpl,
+          `${pascalTableName}-${getCurrentTimestamp()}.java`,
+          pascalTableName
+        );
+        save({ data: repositoryImplData, filePath: repositoryImplPath });
       } finally {
         pool.end();
       }
     }
   );
 });
+
+const save = ({
+  data,
+  filePath,
+  flag,
+}: {
+  filePath: string;
+  data: string;
+  flag?: string;
+}) => {
+  outputFileSync(filePath, data, { flag, encoding: 'utf8' });
+};

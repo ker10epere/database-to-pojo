@@ -2,3 +2,7 @@
 **/*.jsonc
 **/*.java
 **/*.sql
+
+**/outputs
+**/logs
+**/queries
