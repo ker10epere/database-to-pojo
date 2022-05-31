@@ -79,7 +79,10 @@ dbConfig.tables.forEach((tableName) => {
           }
         );
 
-        const repositoryImplData = repositoryImpl(tableRows);
+        const repositoryImplData = repositoryImpl(tableRows).replaceAll(
+          '##CLASSNAME##',
+          pascalTableName
+        );
         const repositoryImplPath = generateDirOutputPath(
           DirectoryType.RepositoryImpl,
           `${pascalTableName}RepositoryImpl-${getCurrentTimestamp()}.java`,
