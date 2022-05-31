@@ -82,7 +82,7 @@ dbConfig.tables.forEach((tableName) => {
         const repositoryImplData = repositoryImpl(tableRows);
         const repositoryImplPath = generateDirOutputPath(
           DirectoryType.RepositoryImpl,
-          `${pascalTableName}-${getCurrentTimestamp()}.java`,
+          `${pascalTableName}RepositoryImpl-${getCurrentTimestamp()}.java`,
           pascalTableName
         );
         save({ data: repositoryImplData, filePath: repositoryImplPath });

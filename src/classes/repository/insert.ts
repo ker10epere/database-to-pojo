@@ -21,7 +21,7 @@ export const insert = (tableRows: TableRow[]): string => {
 
   const template = `
     @Override
-    public Integer insert(##CLASSNAME## item) throws ClassNotFoundException, SQLException,
+    public void insert(##CLASSNAME## item) throws ClassNotFoundException, SQLException,
             NamingException {
         debug(item);
         ${sbInsertQuery}
@@ -37,7 +37,6 @@ ${valuesAdd}
                 final int i = ps.executeUpdate();
 
                 debug("Insert Result = " + i);
-                return i;
             } catch (Exception e) {
                 e.printStackTrace();
                 error(ThrowableUtils.stringify(e));
