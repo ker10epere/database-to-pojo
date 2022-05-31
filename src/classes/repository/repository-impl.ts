@@ -1,12 +1,12 @@
 import { TableRow } from '../database.interfaces';
 import { deleteMultiple } from './delete-list';
-import { insert } from './insert';
+import { create } from './insert';
 import { list } from './list';
 import { updateMultiple } from './update-multiple';
 import { updateWithResult } from './update-with-result';
 
 export const repositoryImpl = (tableRows: TableRow[]) => {
-  const insertMethod = insert(tableRows);
+  const insertMethod = create(tableRows);
   const listMethod = list(tableRows);
   const updateWithResultMethod = updateWithResult(tableRows);
   const updateMultipleMethod = updateMultiple(tableRows);

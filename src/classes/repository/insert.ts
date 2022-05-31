@@ -6,7 +6,7 @@ import {
 import { TableRow } from '../database.interfaces';
 generateSQLInsertQuery;
 
-export const insert = (tableRows: TableRow[]): string => {
+export const create = (tableRows: TableRow[]): string => {
   const valuesAddTabSize = '        ';
 
   const sbInsertQuery = generateSBInsertQuery(tableRows);
@@ -21,7 +21,7 @@ export const insert = (tableRows: TableRow[]): string => {
 
   const template = `
     @Override
-    public void insert(##CLASSNAME## item) throws ClassNotFoundException, SQLException,
+    public void create(##CLASSNAME## item) throws ClassNotFoundException, SQLException,
             NamingException {
         debug(item);
         ${sbInsertQuery}
