@@ -29,7 +29,6 @@ export const deleteMultiple = (): string => {
             for (##CLASSNAME## item : items) {
                 final List<Object> values = new ArrayList<>();
 
-                // order is important
 ${valuesAddId}
 
                 SetPreparedStatement.set(ps, values);
