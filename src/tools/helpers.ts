@@ -1,5 +1,5 @@
 import { camelCase, pascalCase } from 'change-case';
-import { TableRow } from '../classes/database.interfaces';
+import { TableRow } from '../interfaces/database.interfaces';
 
 const generateJavaPropertyNames = (tableRows: TableRow[]): string[] => {
   return tableRows.map(({ columnName }) => camelCase(columnName));
@@ -42,9 +42,10 @@ const generateSBInsertQuery = (tableRows: TableRow[]): string => {
   const columns = tableRows
     .map(({ columnName }) => columnName)
     .filter((columnName) => columnName !== 'id');
+  const columnsLength = columns.length
 
   const insertColumns = columns.join(', ');
-  const insertPlaceHolders = new Array(5).fill('?').join(', ');
+  const insertPlaceHolders = new Array(columnsLength).fill('?').join(', ');
 
   return `final StringBuilder sb =  new StringBuilder("INSERT INTO ").append(tableName).append(" (${insertColumns}) ").append(" VALUES (${insertPlaceHolders}) ;");`;
 };
@@ -114,8 +115,6 @@ const getFindListConsumers = (tableRows: TableRow[]): string[] => {
 
 const getValuesAdd = (columnName: string): string =>
   `values.add(item.get${pascalCase(columnName)}());`;
-
-const arrayToParens = (strings: string[]): string => strings.join(', ');
 
 const getCoalesce = (columnName: string): string =>
   `${columnName}=COALESCE( ? , ${columnName})`;

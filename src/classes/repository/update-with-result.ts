@@ -1,9 +1,6 @@
-import {
-  generateSBUpdateQuery,
-  generateSQLInsertQuery,
-  getValuesAdd,
-} from '../../tools/helpers';
-import { TableRow } from '../database.interfaces';
+import {generateSBUpdateQuery, generateSQLInsertQuery, getValuesAdd,} from '../../tools/helpers';
+import {TableRow} from '../../interfaces/database.interfaces';
+
 generateSQLInsertQuery;
 
 export const updateWithResult = (tableRows: TableRow[]): string => {
@@ -21,7 +18,7 @@ export const updateWithResult = (tableRows: TableRow[]): string => {
     .map((columnName) => valuesAddTabSize + getValuesAdd(columnName))
     .join('\n');
 
-  const template = `
+  return `
     @Override
     public Integer updateWithResult(##CLASSNAME## item) throws ClassNotFoundException, SQLException,
             NamingException {
@@ -40,18 +37,8 @@ ${valuesAdd}
 
                 debug("Update Result = " + i);
                 return i;
-            } catch (Exception e) {
-                e.printStackTrace();
-                error(ThrowableUtils.stringify(e));
-                throw e;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            error(ThrowableUtils.stringify(e));
-            throw e;
+            } 
         }
     }
 `;
-  return template;
 };

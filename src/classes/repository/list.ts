@@ -5,7 +5,8 @@ import {
   generateSQLInsertQuery,
   getFindListConsumers,
 } from '../../tools/helpers';
-import { TableRow } from '../database.interfaces';
+import {TableRow} from '../../interfaces/database.interfaces';
+
 generateSQLInsertQuery;
 
 export const list = (tableRows: TableRow[]): string => {
@@ -24,7 +25,7 @@ export const list = (tableRows: TableRow[]): string => {
     .map((o) => resultSetObjectsTabSize + o)
     .join('\n');
 
-  const template = `
+  return `
     @Override
     public Collection<##CLASSNAME##> list(##CLASSNAME## item) throws ClassNotFoundException,
             SQLException, NamingException {
@@ -52,21 +53,10 @@ ${getResultSetObjects}
                     debug("List Size = " + list.size());
                 }
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                error(ThrowableUtils.stringify(e));
-                throw e;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            error(ThrowableUtils.stringify(e));
-            throw e;
+            } 
         }
-
         return list;
     }
 
 `;
-  return template;
 };

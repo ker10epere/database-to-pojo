@@ -1,8 +1,5 @@
-import {
-  generateSBDeleteQuery,
-  generateSQLInsertQuery,
-  getValuesAdd,
-} from '../../tools/helpers';
+import {generateSBDeleteQuery, generateSQLInsertQuery, getValuesAdd,} from '../../tools/helpers';
+
 generateSQLInsertQuery;
 
 export const deleteMultiple = (): string => {
@@ -12,48 +9,38 @@ export const deleteMultiple = (): string => {
 
   const sbDeleteQuery = generateSBDeleteQuery();
 
-  const template = `
+  return `
     @Override
     public void delete(List<##CLASSNAME##> items) throws ClassNotFoundException, SQLException, NamingException {
         debug(items);
         ${sbDeleteQuery}
 
-        Connection cn = null;
-        PreparedStatement ps = null;
-
-        try {
-            cn = getConnection();
+        try (Connection cn = getConnection();) {
             cn.setAutoCommit(false);
-            ps = cn.prepareStatement(sb.toString());
-
-            for (##CLASSNAME## item : items) {
-                final List<Object> values = new ArrayList<>();
-
-${valuesAddId}
-
-                SetPreparedStatement.set(ps, values);
-                sql(ps);
-                ps.addBatch();
+            try (PreparedStatement ps = cn.prepareStatement(sb.toString())) {
+                for (##CLASSNAME## item : items) {
+                    final List<Object> values = new ArrayList<>();
+    
+    ${valuesAddId}
+    
+                    SetPreparedStatement.set(ps, values);
+                    sql(ps);
+                    ps.addBatch();
+                }
+  
+                int[] results = ps.executeBatch();
+    
+                String joinedResult = IntStream.of(results)
+                        .mapToObj(String::valueOf)
+                        .collect(Collectors.joining("' "));
+                debug("Result [ " + joinedResult + " ]");
+            } catch (SQLException e) {
+                cn.rollback();
+                throw e;
             }
-
-            int[] results = ps.executeBatch();
-
-            String joinedResult = IntStream.of(results)
-                    .mapToObj(String::valueOf)
-                    .collect(Collectors.joining("' "));
-            debug("Result [ " + joinedResult + " ]");
-        } catch (ClassNotFoundException | SQLException | NamingException e) {
-            if (cn != null) cn.rollback();
-            error(ThrowableUtils.stringify(e));
-            throw e;
-        } catch (Throwable e) {
-            if (cn != null) cn.rollback();
-            error(ThrowableUtils.stringify(e));
-            throw ThrowableUtils.errorInstance(e);
-        } finally {
-            close(cn, ps);
+            cn.commit();
+            cn.setAutoCommit(true);
         }
     }
 `;
-  return template;
 };

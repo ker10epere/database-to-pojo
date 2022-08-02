@@ -1,9 +1,6 @@
-import {
-  generateSBInsertQuery,
-  generateSQLInsertQuery,
-  getValuesAdd,
-} from '../../tools/helpers';
-import { TableRow } from '../database.interfaces';
+import {generateSBInsertQuery, generateSQLInsertQuery, getValuesAdd,} from '../../tools/helpers';
+import {TableRow} from '../../interfaces/database.interfaces';
+
 generateSQLInsertQuery;
 
 export const create = (tableRows: TableRow[]): string => {
@@ -19,7 +16,7 @@ export const create = (tableRows: TableRow[]): string => {
     .map((columnName) => valuesAddTabSize + getValuesAdd(columnName))
     .join('\n');
 
-  const template = `
+  return `
     @Override
     public void create(##CLASSNAME## item) throws ClassNotFoundException, SQLException,
             NamingException {
@@ -37,18 +34,8 @@ ${valuesAdd}
                 final int i = ps.executeUpdate();
 
                 debug("Insert Result = " + i);
-            } catch (Exception e) {
-                e.printStackTrace();
-                error(ThrowableUtils.stringify(e));
-                throw e;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            error(ThrowableUtils.stringify(e));
-            throw e;
-        }
+            } 
+        } 
     }
 `;
-  return template;
 };
